@@ -1,3 +1,4 @@
 
 *.csv
 air-scrapper
+.vscode/launch.json

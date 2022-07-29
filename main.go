@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/gocolly/colly/v2"
+	adv "github.com/rcacunar/air-scrapper/utils"
 )
 
 func main() {
@@ -31,6 +32,7 @@ func main() {
 	// Instantiate default collector
 	c := colly.NewCollector()
 
+	//csv header
 	writer.Write([]string{
 		"ciudad",
 		"estado del aire",
@@ -49,21 +51,20 @@ func main() {
 	})
 
 	println(" ## se genera csv ##")
-
-	city = append(city, "ciudad")
-	state = append(state, "estado")
+	//obtain city from the main container (city)
 	c.OnHTML("a.container-city", func(e *colly.HTMLElement) {
-
+		//iterate for every li element
 		e.ForEach("li", func(_ int, el *colly.HTMLElement) {
 
 			if el.Text != " Medidas y recomendaciones" {
 
 				city = append(city, el.Text)
+				adv.SaveC = append(adv.SaveC, el.Text)
 
 			}
 
 		})
-
+		//iterates for every span.label (state)
 		e.ForEach("span.label", func(_ int, sp *colly.HTMLElement) {
 
 			if sp.Text != " " {
@@ -72,9 +73,9 @@ func main() {
 			}
 
 		})
-		fmt.Println(" ")
-		fmt.Println(city[len(city)-1], ",", state[len(state)-1])
-
+		//fmt.Println(" ")
+		//fmt.Println(city[len(city)-1], ",", state[len(state)-1])
+		//write the result
 		writer.Write([]string{
 			city[len(city)-1],
 			state[len(state)-1],
@@ -83,5 +84,8 @@ func main() {
 	})
 
 	c.Visit("https://airechile.mma.gob.cl/")
+
+	fmt.Println(adv.SaveC)
+	adv.Save()
 
 }
